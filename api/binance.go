@@ -23,10 +23,14 @@ type Klinef struct {
 	TakerBuyQuoteAssetVolume float64
 }
 
-func klineWorker(symbols <-chan string, results chan<- []Klinef, coin chan<- string, tf string, limit int, wg *sync.WaitGroup) {
+var mutex = &sync.Mutex{}
+
+func klineWorker(symbols <-chan string, results map[string][]Klinef, tf string, limit int, wg *sync.WaitGroup) {
 	for symbol := range symbols {
-		results <- GetKlines(symbol, tf, limit)
-		coin <- symbol
+		data := GetKlines(symbol, tf, limit)
+		mutex.Lock()
+		results[symbol] = data
+		mutex.Unlock()
 		wg.Done()
 	}
 }
@@ -34,14 +38,12 @@ func klineWorker(symbols <-chan string, results chan<- []Klinef, coin chan<- str
 func GetAllKlines(coins []string, tf string, limit int) map[string][]Klinef {
 	allData := make(map[string][]Klinef)
 
-	results := make(chan []Klinef, len(coins))
-	coin := make(chan string, len(coins))
 	jobs := make(chan string, len(coins))
 
 	var wg sync.WaitGroup
 	wg.Add(len(coins))
 	for w := 1; w <= threadNum; w++ {
-		go klineWorker(jobs, results, coin, tf, limit, &wg)
+		go klineWorker(jobs, allData, tf, limit, &wg)
 	}
 
 	for _, i := range coins {
@@ -49,18 +51,6 @@ func GetAllKlines(coins []string, tf string, limit int) map[string][]Klinef {
 	}
 	close(jobs)
 	wg.Wait()
-	for s := 0; s < len(coins); s++ {
-		// r := <-results
-		// c := <-coin
-		// if c == "BTCUSDT" {
-		// 	fmt.Println(r)
-		// 	fmt.Println("-----------------------------------------------------------------------------")
-		// }
-		// allData[c] = r
-		allData[<-coin] = <-results
-	}
-	close(coin)
-	close(results)
 
 	return allData
 }
@@ -94,10 +84,7 @@ func GetKlines(symbol string, tf string, limit int) []Klinef {
 func Exist(symbol string) bool {
 	client := binance.NewClient("", "")
 	_, err := client.NewKlinesService().Symbol(symbol).Interval("1h").Limit(1).Do(context.Background())
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 func stringToFloat64(s string) float64 {

@@ -8,8 +8,6 @@ import (
 
 func main() {
 	tcoin := api.Topcoins()
-	println(len(tcoin))
-	e := api.GetAllKlines(tcoin, "1h", 10)
-	fmt.Println(e["ETHUSDT"])
+	e := api.GetAllKlines(tcoin, "1h", 1)
 	fmt.Println(len(e))
 }
