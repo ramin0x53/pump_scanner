@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gen2brain/beeep"
+
 	"github.com/ramin0x53/pump_scanner/api"
 )
 
@@ -130,11 +132,13 @@ func calVol(symbol string) float64 {
 
 func pump(symbol string) {
 	fmt.Println(symbol + " pumped")
+	alert(symbol, symbol+" pumped!")
 	fmt.Println(divide)
 }
 
 func dump(symbol string) {
 	fmt.Println(symbol + " dumped")
+	alert(symbol, symbol+" dumped!")
 	fmt.Println(divide)
 }
 
@@ -146,5 +150,12 @@ func findPumpDump() {
 		} else if volatility <= -baseN {
 			dump(key)
 		}
+	}
+}
+
+func alert(symbol string, msg string) {
+	err := beeep.Alert(symbol, msg, "")
+	if err != nil {
+		panic(err)
 	}
 }
