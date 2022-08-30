@@ -1,25 +1,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"time"
 
 	"github.com/ramin0x53/pump_scanner/api"
 )
-
-/*          KLINE_INTERVAL_1MINUTE = '1m'
-            KLINE_INTERVAL_3MINUTE = '3m'
-            KLINE_INTERVAL_5MINUTE = '5m'
-            KLINE_INTERVAL_15MINUTE = '15m'
-            KLINE_INTERVAL_30MINUTE = '30m'
-            KLINE_INTERVAL_1HOUR = '1h'
-            KLINE_INTERVAL_2HOUR = '2h'
-            KLINE_INTERVAL_4HOUR = '4h'
-            KLINE_INTERVAL_6HOUR = '6h'
-            KLINE_INTERVAL_8HOUR = '8h'
-            KLINE_INTERVAL_12HOUR = '12h'
-            KLINE_INTERVAL_1DAY = '1d'
-*/
 
 var tframes = map[string]int64{
 	"1m":  60,
@@ -36,13 +23,28 @@ var tframes = map[string]int64{
 	"1d":  86400,
 }
 
+var divide = "-------------------------"
 var data = make(map[string][]api.Klinef)
 var tcoin []string
-var tf = "5m"
-var lenght = 10
-var baseN float64 = 2
+var tf string
+var lenght int
+var baseN float64
+
+func options() {
+	flag.StringVar(&tf, "tf", "5m", "Timeframe")
+	flag.Float64Var(&baseN, "b", 2, "Base number for comparing volatility")
+	flag.IntVar(&lenght, "l", 10, "Count of candles to compare")
+	flag.IntVar(&api.ThreadNum, "t", 10, "Threads number")
+	flag.Parse()
+	fmt.Println("Timeframe: " + tf)
+	fmt.Printf("Base number: %f\n", baseN)
+	fmt.Printf("Lenght: %d\n", lenght)
+	fmt.Printf("Threads number: %d\n", api.ThreadNum)
+	fmt.Println(divide)
+}
 
 func main() {
+	options()
 	Run()
 }
 
@@ -128,12 +130,12 @@ func calVol(symbol string) float64 {
 
 func pump(symbol string) {
 	fmt.Println(symbol + " pumped")
-	fmt.Println("-------------------------")
+	fmt.Println(divide)
 }
 
 func dump(symbol string) {
 	fmt.Println(symbol + " dumped")
-	fmt.Println("-------------------------")
+	fmt.Println(divide)
 }
 
 func findPumpDump() {

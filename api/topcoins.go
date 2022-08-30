@@ -15,7 +15,7 @@ type Coin struct {
 	Total_volume    float64 `json:"total_volume"`
 }
 
-var ThreadNum int = 10
+var ThreadNum int
 
 func Topcoins() []string {
 	url := "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&per_page=250&page=1"
