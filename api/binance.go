@@ -42,7 +42,7 @@ func GetAllKlines(coins []string, tf string, limit int) map[string][]Klinef {
 
 	var wg sync.WaitGroup
 	wg.Add(len(coins))
-	for w := 1; w <= threadNum; w++ {
+	for w := 1; w <= ThreadNum; w++ {
 		go klineWorker(jobs, allData, tf, limit, &wg)
 	}
 

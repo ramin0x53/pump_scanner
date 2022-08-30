@@ -15,7 +15,7 @@ type Coin struct {
 	Total_volume    float64 `json:"total_volume"`
 }
 
-var threadNum = 10
+var ThreadNum int = 10
 
 func Topcoins() []string {
 	url := "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&per_page=250&page=1"
@@ -38,7 +38,7 @@ func Topcoins() []string {
 	results := make(chan string, len(topcoins))
 	jobs := make(chan string, len(topcoins))
 
-	for w := 1; w <= threadNum; w++ {
+	for w := 1; w <= ThreadNum; w++ {
 		go worker(jobs, results)
 	}
 
