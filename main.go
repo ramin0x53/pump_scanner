@@ -132,13 +132,13 @@ func calVol(symbol string) float64 {
 
 func pump(symbol string) {
 	fmt.Println(symbol + " pumped")
-	alert(symbol, symbol+" pumped!")
+	// alert(symbol, symbol+" pumped!")
 	fmt.Println(divide)
 }
 
 func dump(symbol string) {
 	fmt.Println(symbol + " dumped")
-	alert(symbol, symbol+" dumped!")
+	// alert(symbol, symbol+" dumped!")
 	fmt.Println(divide)
 }
 
